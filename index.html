@@ -393,67 +393,6 @@
         </div>
         
         <div class="performance-table">
-            <h3>📊 Latency Performance Matrix (Lower is Better) </h3>
-            <div class="latency-heatmap">
-                <div class="heatmap-cell low-latency">Lock Single<br>0.29μs</div>
-                <div class="heatmap-cell low-latency">EBR P1:C2<br>44.4μs</div>
-                <div class="heatmap-cell low-latency">EBR P1:C1<br>87.7μs</div>
-                <div class="heatmap-cell low-latency">EBR P1:C4<br>178.3μs</div>
-                <div class="heatmap-cell low-latency">EBR P2:C1<br>259.9μs</div>
-                <div class="heatmap-cell low-latency">EBR P4:C1<br>981.9μs</div>
-                <div class="heatmap-cell medium-latency">Lock P1:C1<br>1,056μs</div>
-                <div class="heatmap-cell medium-latency">HP P1:C4<br>1,053μs</div>
-                <div class="heatmap-cell low-latency">EBR P4:C4<br>1,384μs</div>
-                <div class="heatmap-cell high-latency">HP P1:C2<br>2,042μs</div>
-                <div class="heatmap-cell high-latency">HP P1:C1<br>3,511μs</div>
-                <div class="heatmap-cell high-latency">HP P2:C1<br>7,993μs</div>
-                <div class="heatmap-cell low-latency">EBR 2P Multi<br>9,214μs</div>
-                <div class="heatmap-cell low-latency">EBR 4P Multi<br>14,131μs</div>
-                <div class="heatmap-cell low-latency">EBR 8P Multi<br>15,478μs</div>
-                <div class="heatmap-cell extreme-latency">HP P4:C1<br>17,376μs</div>
-                <div class="heatmap-cell extreme-latency">Lock 2P Multi<br>24,060μs</div>
-                <div class="heatmap-cell extreme-latency">Lock 4P Multi<br>36,227μs</div>
-                <div class="heatmap-cell extreme-latency">Lock 8P Multi<br>45,457μs</div>
-                <div class="heatmap-cell extreme-latency">HP 2P Multi<br>82,972μs</div>
-            </div>
-            <p style="margin-top: 20px; font-size: 1.1rem; color: #2c3e50;">
-                <strong> Matrix Shows:</strong> EBR dominates the entire low-to-medium latency spectrum. 
-                Even EBR's "worst" multi-producer latencies (9-15ms) are still 2-6x better than Lock and HP alternatives.
-            </p>
-        </div>
-        
-        <div class="insights">
-            <h2>🎯 EBR's Unmatched Latency Supremacy</h2>
-            <div class="insight-grid">
-                <div class="insight-card">
-                    <div class="insight-title">Perfect Latency Record</div>
-                    <div>EBR wins 100% of latency comparisons across ALL multi-threaded scenarios. This is unprecedented dominance, not competitive performance.</div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-title">Massive HP Latency Failures</div>
-                    <div>HP shows catastrophic latency: 46x worse in P1:C2, 31x worse in P2:C1, 17.7x worse in P4:C1. HP is unusable for latency-critical applications.</div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-title">Lock Contention Penalties</div>
-                    <div>Lock latency degrades severely under load: 18.04% contention in P1:C4, 23.02% in P4:C4. EBR maintains 0.00% contention always.</div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-title">EBR's Consistent Excellence</div>
-                    <div>From 44μs (P1:C2) to 15ms (8P multi-producer), EBR delivers the lowest latency across the entire spectrum of threading patterns.</div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-title">Producer/Consumer Ratio Irrelevant</div>
-                    <div>Whether 1P:1C, 1P:4C, 4P:1C, or 4P:4C - EBR wins every latency comparison. The threading pattern doesn't matter for EBR's dominance.</div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-title">The Clear Choice</div>
-                    <div>For ANY latency-sensitive application, EBR is the only viable choice. The data shows no scenario where alternatives compete on latency.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-     <div class="performance-table">
             <h3>📊 Complete Raw Benchmark Data</h3>
             <div style="overflow-x: auto; font-size: 0.8rem;">
                 <table style="font-size: 0.75rem;">
@@ -985,8 +924,6 @@
         </div>
     </div>
 
-
-    
     <script>
         // Single-Thread Performance Comparison
         const singleThreadCtx = document.getElementById('singleThreadChart').getContext('2d');
