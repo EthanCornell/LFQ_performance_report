@@ -237,8 +237,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>⚡ EBR LockFree Queue: The Undisputed Latency Champion</h1>
+        <h1>⚡ EBR Queue: The Undisputed Latency Champion</h1>
         <p class="subtitle">Complete Latency Dominance • EBR Wins ALL Multi-Threaded Scenarios</p>
+        <div style="text-align: center; margin-bottom: 30px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; backdrop-filter: blur(5px);">
+            <p style="margin: 0; color: #2c3e50; font-size: 1.1rem;">
+                <strong>Author:</strong> I-Hsuan (Ethan) Huang<br>
+                <strong>Source:</strong> <a href="https://github.com/EthanCornell/HazardLFQ-EBRLFQ" target="_blank" style="color: #3498db; text-decoration: none; font-weight: 600;">🔗 HazardLFQ-EBRLFQ GitHub Repository</a>
+            </p>
+        </div>
         
         <div class="metrics-grid">
             <div class="metric-card">
@@ -249,7 +255,7 @@
             <div class="metric-card">
                 <div class="metric-title">Best EBR Advantage</div>
                 <div class="metric-value">31x</div>
-                <div class="metric-subtitle">Better than HP in P2:C1 (260μs vs 8000μs)</div>
+                <div class="metric-subtitle">Better than HP in P2:C1 (260μs vs 80,00μs)</div>
             </div>
             <div class="metric-card">
                 <div class="metric-title">EBR P1:C2 Dominance</div>
@@ -921,6 +927,35 @@
                     <div>For ANY latency-sensitive application, EBR is the only viable choice. The data shows no scenario where alternatives compete on latency.</div>
                 </div>
             </div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 30px; border-radius: 15px; margin-top: 40px; text-align: center;">
+            <h2 style="margin-top: 0; color: white;">📚 About This Analysis</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 20px;">
+                This comprehensive performance analysis is based on rigorous benchmarking of three queue implementations:
+                Lock-based, EBR (Epoch-Based Reclamation), and HP (Hazard Pointer) lock-free queues.
+            </p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;">
+                <div>
+                    <strong>👨‍💻 Author:</strong><br>
+                    I-Hsuan (Ethan) Huang
+                </div>
+                <div>
+                    <strong>🔬 Methodology:</strong><br>
+                    100,000 samples per test<br>
+                    16-thread hardware
+                </div>
+                <div>
+                    <strong>📊 Repository:</strong><br>
+                    <a href="https://github.com/EthanCornell/HazardLFQ-EBRLFQ" target="_blank" 
+                       style="color: #3498db; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+                        <span>🔗</span> HazardLFQ-EBRLFQ
+                    </a>
+                </div>
+            </div>
+            <p style="margin-top: 25px; font-size: 0.95rem; opacity: 0.9;">
+                <em>Industrial-strength, header-only lock-free queue implementations with comprehensive memory reclamation strategies.</em>
+            </p>
         </div>
     </div>
 
