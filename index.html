@@ -1,14 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Queue Performance: Latency vs Throughput Analysis</title>
-
-    <!-- Chart.js kept in case you add charts later -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Queue Performance: Latency vs Throughput Analysis</title>
+<!-- Chart.js kept in case you add charts later -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
         /* ---------- base & layout ---------- */
         *{box-sizing:border-box;margin:0;padding:0;font:400 14px/1.45 "Segoe UI","Helvetica Neue",Arial,sans-serif}
         body{min-height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:1.5rem;color:#243447}
@@ -35,13 +34,46 @@
 
         /* allow long tables to scroll without affecting header */
         .table-wrapper{max-height:75vh;overflow:auto}
-    </style>
+    
+.best-latency,.best-min-latency,.best-max-latency,.best-p99{background:#2ecc71;color:#fff;font-weight:700;}
+.best-throughput{background:#f39c12;color:#fff;font-weight:700;}
+.best-memory{background:#3498db;color:#fff;font-weight:700;}
+.best-contention{background:#8e44ad;color:#fff;font-weight:700;}
+</style>
 </head>
 <body>
 <div class="container">
-
 <h1>⚡ EBR Lock‑Free Queue — Full Raw Benchmark Results</h1>
-<p class="subtitle">Data source: <code>queue_comparison_results_v2.csv</code> &nbsp;•&nbsp; Green = lowest latency • Orange = highest throughput • Purple = wins both</p>
+<div class="github-banner" style="background:rgba(0,0,0,0.85);color:#fff;padding:15px 20px;border-radius:12px;margin:25px 0;display:flex;justify-content:center;align-items:center;gap:10px;font-size:1rem;">
+<span style="font-size:1.3rem;">🚀</span>
+<a href="https://github.com/EthanCornell/HazardLFQ-EBRLFQ" style="color:#66d9ff;font-weight:600;text-decoration:none;" target="_blank">
+     View Source Code on GitHub: HazardLFQ‑EBRLFQ
+  </a>
+</div>
+<section class="champions" style="background:linear-gradient(135deg,#19c889 0%,#1dd8a0 100%);color:#fff;padding:25px;border-radius:16px;margin-bottom:30px;">
+<h2 style="margin-top:0;text-align:center;font-size:1.6rem;">🏆 Aggregate Champions</h2>
+<p style="text-align:center;font-size:1rem;margin:10px 0 25px;">Based on 136 benchmark runs, we computed overall medians for Mean Latency, Throughput, and Memory Overhead. Each metric highlights the queue that delivers the best typical performance across the full workload spectrum.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
+<div style="background:rgba(255,255,255,0.12);padding:25px;border-radius:12px;text-align:center;">
+<h3 style="margin:0 0 10px;font-size:1.1rem;">Lowest Median Latency</h3>
+<div style="font-size:2.2rem;font-weight:700;">EBR</div>
+<div style="font-size:.9rem;">≈ 1.4 × faster (median vs 2nd place)</div>
+</div>
+<div style="background:rgba(255,255,255,0.12);padding:25px;border-radius:12px;text-align:center;border:3px solid #f39c12;">
+<h3 style="margin:0 0 10px;font-size:1.1rem;">Highest Median Throughput</h3>
+<div style="font-size:2.2rem;font-weight:700;">Boost</div>
+<div style="font-size:.9rem;">Peaks &gt; 3 M ops/s single‑thread and &gt; 760 K ops/s (4P)</div>
+</div>
+<div style="background:rgba(255,255,255,0.12);padding:25px;border-radius:12px;text-align:center;">
+<h3 style="margin:0 0 10px;font-size:1.1rem;">Smallest Footprint</h3>
+<div style="font-size:2.2rem;font-weight:700;">Lock</div>
+<div style="font-size:.9rem;">≈ 8.8 MB vs 14.5 MB (Boost)</div>
+</div>
+</div>
+</section>
+
+
+<p class="subtitle">Data source: <code>queue_comparison_results_v2.csv</code>  •  Green = lowest latency • Orange = highest throughput • Purple = wins both</p>
 <!-- ---------- BEGIN ANALYSIS OVERVIEW ---------- -->
 <style>
 .analysis-overview{background:linear-gradient(135deg,#11998e 0%,#38ef7d 100%);padding:30px;border-radius:15px;color:#fff;margin-bottom:35px}
@@ -55,32 +87,31 @@
 .analysis-card.memory{border:2px solid #3498db}
 .analysis-card span small{display:block;font-size:.85rem;margin-top:6px}
 </style>
-
 <div class="analysis-overview">
-  <h2>🏆 Aggregate Champions</h2>
-  <p style="text-align:center;font-size:1.05rem;margin-bottom:20px">
-    Based on <strong>136</strong> benchmark runs, we computed overall medians for <em>Mean&nbsp;Latency</em>, <em>Throughput</em>,
-    and <em>Memory&nbsp;Overhead</em>.  Each metric highlights the queue that delivers the best typical performance across the full workload spectrum.
+<h2>🏆 Aggregate Champions</h2>
+<p style="text-align:center;font-size:1.05rem;margin-bottom:20px">
+    Based on <strong>136</strong> benchmark runs, we computed overall medians for <em>Mean Latency</em>, <em>Throughput</em>,
+    and <em>Memory Overhead</em>.  Each metric highlights the queue that delivers the best typical performance across the full workload spectrum.
   </p>
-  <div class="analysis-grid">
-    <div class="analysis-card latency">
-      <h3>Lowest Median Latency</h3>
-      <div class="value">EBR</div>
-      <span>≈ <span style="white-space:nowrap">1.4 ×</span> faster<span small>(median vs 2nd place)</span></span>
-    </div>
-    <div class="analysis-card throughput">
-      <h3>Highest Median Throughput</h3>
-      <div class="value">Boost</div>
-      <span>Peaks > 3 M ops/s single‑thread and > 760 K ops/s (4P)</span>
-    </div>
-    <div class="analysis-card memory">
-      <h3>Smallest Footprint</h3>
-      <div class="value">Lock</div>
-      <span>~8.8 MB vs 14.5 MB (Boost)</span>
-    </div>
-  </div>
-  <p style="margin-top:25px;font-size:1rem">
-    <strong>Overall Recommendation:</strong> If your priority is <strong>latency‑sensitive pipelines</strong> (e.g., real‑time detector feeds),
+<div class="analysis-grid">
+<div class="analysis-card latency">
+<h3>Lowest Median Latency</h3>
+<div class="value">EBR</div>
+<span>≈ <span style="white-space:nowrap">1.4 ×</span> faster<span small="">(median vs 2nd place)</span></span>
+</div>
+<div class="analysis-card throughput">
+<h3>Highest Median Throughput</h3>
+<div class="value">Boost</div>
+<span>Peaks &gt; 3 M ops/s single‑thread and &gt; 760 K ops/s (4P)</span>
+</div>
+<div class="analysis-card memory">
+<h3>Smallest Footprint</h3>
+<div class="value">Lock</div>
+<span>~8.8 MB vs 14.5 MB (Boost)</span>
+</div>
+</div>
+<p style="margin-top:25px;font-size:1rem">
+<strong>Overall Recommendation:</strong> If your priority is <strong>latency‑sensitive pipelines</strong> (e.g., real‑time detector feeds),
     choose <span style="color:#2ecc71;font-weight:600">EBR</span>.  
     For <strong>bulk throughput</strong> (e.g., archival ingestion) and you can tolerate a larger footprint, <span style="color:#f39c12;font-weight:600">Boost</span> shines.  
     When <strong>RAM is constrained</strong> and absolute simplicity matters, the classic <span style="color:#3498db;font-weight:600">Lock‑based</span> queue still has its place.
@@ -92,45 +123,43 @@
 .chart-container{background:#fff;padding:20px;border-radius:15px;box-shadow:0 8px 32px rgba(0,0,0,.1)}
 .chart-title{font-size:1.25rem;font-weight:600;text-align:center;margin-bottom:10px;color:#2c3e50}
 </style>
-
 <!-- ---------- BEGIN COMPARISON GRAPHS ---------- -->
 <div class="grid">
-  <div class="chart-container">
-    <div class="chart-title">Median Mean Latency (µs)</div>
-    <canvas id="latencyBar"></canvas>
-  </div>
-  <div class="chart-container">
-    <div class="chart-title">Median Throughput (K ops/sec)</div>
-    <canvas id="throughputBar"></canvas>
-  </div>
-  <div class="chart-container">
-    <div class="chart-title">Median Memory Footprint (MB)</div>
-    <canvas id="memoryBar"></canvas>
-  </div>
+<div class="chart-container">
+<div class="chart-title">Median Mean Latency (µs)</div>
+<canvas id="latencyBar"></canvas>
 </div>
-
+<div class="chart-container">
+<div class="chart-title">Median Throughput (K ops/sec)</div>
+<canvas id="throughputBar"></canvas>
+</div>
+<div class="chart-container">
+<div class="chart-title">Median Memory Footprint (MB)</div>
+<canvas id="memoryBar"></canvas>
+</div>
+</div>
 <div class="grid">
-  <div class="chart-container">
-    <div class="chart-title">Latency Scaling vs Threads</div>
-    <canvas id="latencyScaling"></canvas>
-  </div>
-  <div class="chart-container">
-    <div class="chart-title">Throughput Scaling vs Threads</div>
-    <canvas id="throughputScaling"></canvas>
-  </div>
+<div class="chart-container">
+<div class="chart-title">Latency Scaling vs Threads</div>
+<canvas id="latencyScaling"></canvas>
+</div>
+<div class="chart-container">
+<div class="chart-title">Throughput Scaling vs Threads</div>
+<canvas id="throughputScaling"></canvas>
+</div>
 </div>
 <!-- ---------- END COMPARISON GRAPHS ---------- -->
 <div class="performance-table">
-  <h3>✨ Key Median Metrics by Queue</h3>
-  <div class="table-wrapper"><table>
-    <thead><tr>
-      <th>Queue</th>
-      <th>Median Latency (µs)</th>
-      <th>Median P99 (µs)</th>
-      <th>Median Throughput (ops/sec)</th>
-      <th>Median Memory (bytes)</th>
-      <th>Median Contention (%)</th>
-    </tr></thead><tbody>
+<h3>✨ Key Median Metrics by Queue</h3>
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Queue</th>
+<th>Median Latency (µs)</th>
+<th>Median P99 (µs)</th>
+<th>Median Throughput (ops/sec)</th>
+<th>Median Memory (bytes)</th>
+<th>Median Contention (%)</th>
+</tr></thead><tbody>
 <tr><td>Lock</td><td>1107.57</td><td>1937.07</td><td>216,784</td><td>880,120</td><td>10.59</td></tr>
 <tr><td>EBR</td><td>647.37</td><td>993.48</td><td>232,691</td><td>881,152</td><td>0.00</td></tr>
 <tr><td>HP</td><td>2006.01</td><td>3535.18</td><td>239,171</td><td>880,256</td><td>0.00</td></tr>
@@ -143,51 +172,54 @@
 .reco-card h4{margin-top:0;margin-bottom:8px;font-size:1.2rem}
 </style>
 <div class="analysis-overview" style="background:#34495e">
-  <h2 style="color:#fff;text-align:center">📌 Deployment Recommendations</h2>
-  <div class="reco-grid">
-    <div class="reco-card"><h4>EBR Queue 🟢</h4><p>Best for <strong>latency‑critical</strong> event pipelines (detector acquisition, HFT matching engines). 0 % contention, sub‑ms tail latencies up to 8 threads.</p></div>
-    <div class="reco-card"><h4>Boost Queue 🟧</h4><p>Great in <strong>burst‑throughput</strong> workloads like batch ingestion or log aggregation. Accept slightly higher memory footprint for steady >3 M ops/s single‑thread.</p></div>
-    <div class="reco-card"><h4>Lock Queue 🔴</h4><p>Acceptable for <strong>memory‑constrained</strong> embedded controllers or administrative paths where predictability &amp; simplicity trump speed.</p></div>
-    <div class="reco-card"><h4>HP Queue 🔵</h4><p>Fair choice when <strong>deterministic reclamation</strong> is mandatory (hard‑RT OS) and developers are comfortable paying extra latency.</p></div>
-  </div>
+<h2 style="color:#fff;text-align:center">📌 Deployment Recommendations</h2>
+<div class="reco-grid">
+<div class="reco-card"><h4>EBR Queue 🟢</h4><p>Best for <strong>latency‑critical</strong> event pipelines (detector acquisition, HFT matching engines). 0 % contention, sub‑ms tail latencies up to 8 threads.</p></div>
+<div class="reco-card"><h4>Boost Queue 🟧</h4><p>Great in <strong>burst‑throughput</strong> workloads like batch ingestion or log aggregation. Accept slightly higher memory footprint for steady &gt;3 M ops/s single‑thread.</p></div>
+<div class="reco-card"><h4>Lock Queue 🔴</h4><p>Acceptable for <strong>memory‑constrained</strong> embedded controllers or administrative paths where predictability &amp; simplicity trump speed.</p></div>
+<div class="reco-card"><h4>HP Queue 🔵</h4><p>Fair choice when <strong>deterministic reclamation</strong> is mandatory (hard‑RT OS) and developers are comfortable paying extra latency.</p></div>
+</div>
 </div>
 <!-- ---------- END RECOMMENDATIONS ---------- -->
-
-
-
-
 <!-- ---------- BEGIN RAW‑DATA TABLE ---------- -->
 <div class="performance-table">
-    <h3>📊 Complete Raw Data (136 rows × 21 columns)</h3>
-    <div class="table-wrapper">
-        <table class="raw-data-table">
+<h3>📊 Complete Raw Data (136 rows × 21 columns)</h3>
+<div class="search-download-wrapper" style="margin:20px 0;">
+<input id="searchInput" onkeyup="filterTable()" placeholder="🔍 Search by queue type (EBR, Boost, Lock…)" style="width:100%;padding:14px 20px;font-size:15px;border:3px solid #3498db;border-radius:50px;outline:none;margin-bottom:8px;" type="text"/>
+<div style="font-size:0.87rem;color:#555;margin-bottom:12px;">💡 Search examples: "EBR", "Multi-producer", "P4:C4", "Single-threaded"</div>
+<button onclick="downloadCSV()" style="background:#28a745;color:#fff;border:none;padding:14px 24px;border-radius:10px;font-size:1rem;cursor:pointer;">
+     📥 Download Complete Data as CSV
+  </button>
+</div>
 
-            <thead>
-                <tr>
-                    <th>Benchmark</th>
-                    <th>Queue_Type</th>
-                    <th>Threads</th>
-                    <th>Payload_Size</th>
-                    <th>Queue_Depth</th>
-                    <th>Sample_Count</th>
-                    <th>Mean_Latency_us</th>
-                    <th>Min_Latency_us</th>
-                    <th>Max_Latency_us</th>
-                    <th>Std_Dev_us</th>
-                    <th>Jitter</th>
-                    <th>Memory_Overhead_bytes</th>
-                    <th>Contention_Rate</th>
-                    <th>Queue_Full_Failures</th>
-                    <th>P50_us</th>
-                    <th>P90_us</th>
-                    <th>P95_us</th>
-                    <th>P99_us</th>
-                    <th>P99_9_us</th>
-                    <th>P99_99_us</th>
-                    <th>Throughput_ops_per_sec</th>
-                </tr>
-            </thead>
-            <tbody>
+<div class="table-wrapper">
+<table class="raw-data-table">
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Queue_Type</th>
+<th>Threads</th>
+<th>Payload_Size</th>
+<th>Queue_Depth</th>
+<th>Sample_Count</th>
+<th>Mean_Latency_us</th>
+<th>Min_Latency_us</th>
+<th>Max_Latency_us</th>
+<th>Std_Dev_us</th>
+<th>Jitter</th>
+<th>Memory_Overhead_bytes</th>
+<th>Contention_Rate</th>
+<th>Queue_Full_Failures</th>
+<th>P50_us</th>
+<th>P90_us</th>
+<th>P95_us</th>
+<th>P99_us</th>
+<th>P99_9_us</th>
+<th>P99_99_us</th>
+<th>Throughput_ops_per_sec</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>Single-threaded baseline</td>
 <td>Lock</td>
@@ -3316,19 +3348,16 @@
 <td>0</td>
 <td>3,147,570.00</td>
 </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <p style="margin-top:1rem;font-size:.95rem;color:#2c3e50">
-        Green rows = lowest mean latency for that benchmark • Orange rows = highest throughput • Purple = wins both.<br>
+</tbody>
+</table>
+</div>
+<p style="margin-top:1rem;font-size:.95rem;color:#2c3e50">
+        Green rows = lowest mean latency for that benchmark • Orange rows = highest throughput • Purple = wins both.<br/>
         Scroll horizontally/vertically to inspect every cell.
     </p>
 </div>
 <!-- ---------- END RAW‑DATA TABLE ---------- -->
-
 </div><!-- .container -->
-
 <script>
 const threads = [1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 16];
 
@@ -3393,6 +3422,64 @@ document.addEventListener('DOMContentLoaded', function(){
     createChart('throughputScaling','line',throughputScalingData,'Throughput (K ops/sec)');
 });
 </script>
+<!-- ---------- SEARCH BAR SCRIPT ---------- -->
+<script>
+(function(){
+  const searchInput = document.querySelector('.search-input');
+  if(searchInput){
+    searchInput.addEventListener('input', function(){
+      const query = this.value.toLowerCase().trim();
+      document.querySelectorAll('.raw-data-table tbody tr').forEach(tr=>{
+        const text = tr.textContent.toLowerCase();
+        tr.style.display = text.includes(query)?'':'none';
+      });
+    });
+  }
+})();
+</script>
 
+<script>
+function filterTable(){
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('table.raw-data-table tbody tr');
+    rows.forEach(r=>{
+        const text = r.innerText.toLowerCase();
+        if(text.indexOf(query) !== -1){
+            r.style.display='';
+        }else{
+            r.style.display='none';
+        }
+    });
+}
+
+function downloadCSV(){
+    const table = document.querySelector('table.raw-data-table');
+    if(!table){return;}
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    rows.forEach(row=>{
+        const cols = row.querySelectorAll('th,td');
+        const rowData = [];
+        cols.forEach(col=>{
+            // escape quotes
+            let data = col.innerText.replace(/"/g,'""');
+            // wrap if contains comma
+            if(data.search(/("|,|\n)/g)>=0){
+               data = `"${data}"`;
+            }
+            rowData.push(data);
+        });
+        csv.push(rowData.join(','));
+    });
+    const csvString = csv.join('\n');
+    const blob = new Blob([csvString],{type:'text/csv;charset=utf-8;'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'queue_benchmark_dataset.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
 </body>
 </html>
